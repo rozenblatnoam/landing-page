@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart IoT Management Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #0a0a0f;
+      color: #ffffff;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .animated-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 80%, #1e3c72 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #2a5298 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, #3b82f6 0%, transparent 50%);
+      animation: bgShift 20s ease infinite;
+    }
+
+    @keyframes bgShift {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.1) rotate(2deg); }
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: rgba(59, 130, 246, 0.6);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 15px 50px;
+      background: rgba(10, 10, 15, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .nav-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* Header */
+    header {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 80px 20px 60px;
+      position: relative;
+    }
+
+    .header-content {
+      max-width: 800px;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    header h1 {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: textGlow 3s ease-in-out infinite alternate;
+      line-height: 1.2;
+    }
+
+    @keyframes textGlow {
+      0% { filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)); }
+      100% { filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.5)); }
+    }
+
+    header p {
+      font-size: 1.3rem;
+      margin-bottom: 40px;
+      opacity: 0.9;
+      color: #cbd5e1;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 18px 40px;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4);
+      color: white;
+      font-weight: bold;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 50px;
+      font-size: 1.1rem;
+      border: 2px solid transparent;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: left 0.3s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .header-image {
+      max-width: 700px;
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: floatImage 6s ease-in-out infinite;
+      border: 2px solid rgba(59, 130, 246, 0.3);
+    }
+
+    @keyframes floatImage {
+      0%, 100% { transform: translateY(0px) rotateX(0deg); }
+      50% { transform: translateY(-20px) rotateX(2deg); }
+    }
+
+    /* Sections */
+    section {
+      max-width: 1200px;
+      margin: auto;
+      padding: 80px 20px;
+      position: relative;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 60px;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4);
+      border-radius: 2px;
+    }
+
+    /* Cards */
+    .features, .use-cases {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover {
+      transform: translateY(-15px) scale(1.02);
+      box-shadow: 0 25px 50px rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .card:hover img {
+      transform: scale(1.05);
+      border-color: rgba(59, 130, 246, 0.8);
+    }
+
+    .card h3 {
+      color: #06b6d4;
+      margin-bottom: 15px;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .card p {
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    /* Capabilities Section */
+    .capabilities {
+      background: rgba(59, 130, 246, 0.05);
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      backdrop-filter: blur(20px);
+    }
+
+    .capabilities ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+    }
+
+    .capabilities li {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #3b82f6;
+      transition: all 0.3s ease;
+      position: relative;
+      padding-left: 50px;
+    }
+
+    .capabilities li::before {
+      content: '✓';
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #06b6d4;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .capabilities li:hover {
+      background: rgba(59, 130, 246, 0.1);
+      transform: translateX(10px);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      text-align: center;
+      background: rgba(59, 130, 246, 0.05);
+      border-radius: 20px;
+      padding: 60px 40px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      backdrop-filter: blur(20px);
+    }
+
+    .cta-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(10, 10, 15, 0.9);
+      backdrop-filter: blur(20px);
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid rgba(59, 130, 246, 0.2);
+      color: #64748b;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      nav {
+        padding: 15px 20px;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .features, .use-cases {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      section {
+        padding: 60px 20px;
+      }
+      
+      .capabilities ul {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Scroll animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Loading animation for images */
+    .card img {
+      transition: all 0.3s ease, opacity 0.5s ease;
+    }
+
+    .card img.loading {
+      opacity: 0.7;
+      filter: blur(2px);
+    }
+
+    .card img.loaded {
+      opacity: 1;
+      filter: blur(0);
+    }
+
+    .card img.error {
+      opacity: 1;
+      filter: blur(0);
+    }
+
+    /* Image placeholders */
+    .image-placeholder {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+      margin-bottom: 20px;
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .header-image-placeholder {
+      max-width: 700px;
+      width: 100%;
+      height: 400px;
+      background: linear-gradient(45deg, #1e3a8a, #3b82f6, #8b5cf6);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 4rem;
+      animation: floatImage 6s ease-in-out infinite;
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .card:hover .image-placeholder {
+      transform: scale(1.05);
+      border-color: rgba(59, 130, 246, 0.8);
+    }
+  </style>
+</head>
+<body>
+
+<div class="animated-bg"></div>
+<div class="particles" id="particles"></div>
+
+<nav id="navbar">
+  <div class="nav-content">
+    <div class="logo">IoT Smart Platform</div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#capabilities">Capabilities</a></li>
+      <li><a href="#use-cases">Use Cases</a></li>
+      <li><a href="#get-started">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header id="home">
+  <div class="header-content">
+    <h1>Smart, Secure & Modular IoT Management Platform</h1>
+    <p>Control, monitor, and analyze your IoT devices and sensors from anywhere – securely and in real time.</p>
+    <a href="#get-started" class="btn-primary">Get Started Now</a>
+    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80" 
+         alt="IoT Dashboard" 
+         class="header-image loading"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+    <div class="header-image-placeholder" style="display: none;">
+      📊
+    </div>
+  </div>
+</header>
+
+<section id="features" class="fade-in">
+  <h2 class="section-title">Why Choose Our Platform?</h2>
+  <div class="features">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80" 
+           alt="Security" 
+           class="loading"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="image-placeholder" style="display: none;">🛡️</div>
+      <h3>Enterprise-Grade Security</h3>
+      <p>End-to-end encryption, RBAC, and secure provisioning to protect your data with military-grade security protocols.</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80" 
+           alt="Protocols" 
+           class="loading"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="image-placeholder" style="display: none;">🌐</div>
+      <h3>Multi-Protocol Support</h3>
+      <p>MQTT, HTTP(S), WebSocket, LoRa, NB-IoT, LTE – all fully encrypted with seamless protocol switching.</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1518186233392-c232efbf2373?auto=format&fit=crop&w=800&q=80" 
+           alt="Automation" 
+           class="loading"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="image-placeholder" style="display: none;">⚡</div>
+      <h3>No-Code Automation</h3>
+      <p>Set rules and workflows without writing code – save time and scale faster with intelligent automation.</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" 
+           alt="Dashboard" 
+           class="loading"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="image-placeholder" style="display: none;">📈</div>
+      <h3>Real-Time Dashboard</h3>
+      <p>Monitor live data, control devices, and get instant alerts from any device with advanced analytics.</p>
+    </div>
+  </div>
+</section>
+
+<section id="capabilities" class="fade-in">
+  <h2 class="section-title">Key Capabilities</h2>
+  <div class="capabilities">
+    <ul>
+      <li>Multi-tenant architecture – manage multiple clients in one unified platform.</li>
+      <li>OTA firmware updates for ESP32, STM32, Raspberry Pi with rollback capabilities.</li>
+      <li>Offline data buffering & automatic sync with intelligent conflict resolution.</li>
+      <li>Edge AI for image, audio, and sensor data processing with real-time insights.</li>
+      <li>REST & GraphQL APIs with full OpenAPI documentation and SDK support.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="use-cases" class="fade-in">
+  <h2 class="section-title">Use Cases</h2>
+  <div class="use-cases">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80" 
+           alt="Agriculture" 
+           class="loading"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="image-placeholder" style="display: none;">🌾</div>
+      <h3>Smart Agriculture</h3>
+      <p>Automate irrigation, monitor soil conditions, and optimize yield with AI-powered predictions and weather integration.</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1f?auto=format&fit=crop&w=800&q=80" 
+           alt="Smart Cities" 
+           class="loading"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="image-placeholder" style="display: none;">🏙️</div>
+      <h3>Smart Cities</h3>
+      <p>Manage street lighting, traffic flow, and environmental monitoring efficiently with centralized control systems.</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
+           alt="Energy Management" 
+           class="loading"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="image-placeholder" style="display: none;">⚡</div>
+      <h3>Energy Management</h3>
+      <p>Track and optimize energy consumption for homes and industries with predictive analytics and cost optimization.</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=800&q=80" 
+           alt="Industrial IoT" 
+           class="loading"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="image-placeholder" style="display: none;">🏭</div>
+      <h3>Industrial IoT</h3>
+      <p>Real-time machine monitoring, predictive maintenance, and automation with advanced anomaly detection.</p>
+    </div>
+  </div>
+</section>
+
+<section id="get-started" class="fade-in">
+  <div class="cta-section">
+    <h2>Start Managing Your IoT Devices Smarter</h2>
+    <p style="font-size: 1.2rem; margin-bottom: 30px; color: #cbd5e1;">Join thousands of companies already using our platform to transform their IoT operations.</p>
+    <a href="#" class="btn-primary">Request a Demo</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Smart IoT Platform. All rights reserved. | Empowering the connected world with intelligent solutions.</p>
+</footer>
+
+<script>
+  // Create floating particles
+  function createParticles() {
+    const particles = document.getElementById('particles');
+    for (let i = 0; i < 60; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 15 + 's';
+      particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+      particles.appendChild(particle);
+    }
+  }
+
+  // Scroll animations
+  function handleScrollAnimations() {
+    const elements = document.querySelectorAll('.fade-in');
+    const windowHeight = window.innerHeight;
+
+    elements.forEach(element => {
+      const elementTop = element.getBoundingClientRect().top;
+      if (elementTop < windowHeight - 100) {
+        element.classList.add('visible');
+      }
+    });
+  }
+
+  // Navbar background on scroll
+  function handleNavbarScroll() {
+    const navbar = document.getElementById('navbar');
+    const scrolled = window.pageYOffset;
+    
+    if (scrolled > 100) {
+      navbar.style.background = 'rgba(10, 10, 15, 0.95)';
+      navbar.style.backdropFilter = 'blur(25px)';
+    } else {
+      navbar.style.background = 'rgba(10, 10, 15, 0.9)';
+      navbar.style.backdropFilter = 'blur(20px)';
+    }
+  }
+
+  // Smooth scrolling for navigation links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Image loading animation
+  function handleImageLoading() {
+    const images = document.querySelectorAll('.card img, .header-image');
+    images.forEach(img => {
+      // Handle successful load
+      img.addEventListener('load', function() {
+        this.classList.remove('loading');
+        this.classList.add('loaded');
+      });
+      
+      // Handle error - show placeholder
+      img.addEventListener('error', function() {
+        this.style.display = 'none';
+        const placeholder = this.nextElementSibling;
+        if (placeholder && placeholder.classList.contains('image-placeholder') || placeholder.classList.contains('header-image-placeholder')) {
+          placeholder.style.display = 'flex';
+        }
+      });
+      
+      // If image is already loaded (from cache)
+      if (img.complete && img.naturalHeight !== 0) {
+        img.classList.remove('loading');
+        img.classList.add('loaded');
+      } else if (img.complete && img.naturalHeight === 0) {
+        // Image failed to load
+        img.style.display = 'none';
+        const placeholder = img.nextElementSibling;
+        if (placeholder && (placeholder.classList.contains('image-placeholder') || placeholder.classList.contains('header-image-placeholder'))) {
+          placeholder.style.display = 'flex';
+        }
+      }
+    });
+  }
+
+  // Retry failed images after delay
+  function retryFailedImages() {
+    setTimeout(() => {
+      const hiddenImages = document.querySelectorAll('img[style*="display: none"]');
+      hiddenImages.forEach(img => {
+        // Try alternative image sources
+        const altSources = [
+          'https://via.placeholder.com/800x400/3B82F6/FFFFFF?text=' + encodeURIComponent(img.alt),
+          'https://picsum.photos/800/400?random=' + Math.floor(Math.random() * 1000)
+        ];
+        
+        let currentAlt = 0;
+        function tryNextSource() {
+          if (currentAlt < altSources.length) {
+            const newImg = new Image();
+            newImg.onload = function() {
+              img.src = altSources[currentAlt];
+              img.style.display = 'block';
+              const placeholder = img.nextElementSibling;
+              if (placeholder && (placeholder.classList.contains('image-placeholder') || placeholder.classList.contains('header-image-placeholder'))) {
+                placeholder.style.display = 'none';
+              }
+            };
+            newImg.onerror = function() {
+              currentAlt++;
+              tryNextSource();
+            };
+            newImg.src = altSources[currentAlt];
+          }
+        }
+        tryNextSource();
+      });
+    }, 2000);
+  }
+
+  // 3D tilt effect for cards
+  function addCardTiltEffect() {
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = (y - centerY) / 15;
+        const rotateY = (centerX - x) / 15;
+        
+        card.style.transform = `translateY(-15px) scale(1.02) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0) scale(1) rotateX(0) rotateY(0)';
+      });
+    });
+  }
+
+  // Parallax effect for header
+  function addParallaxEffect() {
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const header = document.querySelector('header');
+      const rate = scrolled * -0.3;
+      header.style.transform = `translateY(${rate}px)`;
+    });
+  }
+
+  // Initialize everything
+  document.addEventListener('DOMContentLoaded', function() {
+    createParticles();
+    handleImageLoading();
+    addCardTiltEffect();
+    addParallaxEffect();
+    handleScrollAnimations();
+    retryFailedImages();
+    
+    // Initial check for visible elements
+    setTimeout(handleScrollAnimations, 100);
+  });
+
+  // Event listeners
+  window.addEventListener('scroll', () => {
+    handleScrollAnimations();
+    handleNavbarScroll();
+  });
+
+  // Add stagger animation to cards
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+      card.style.animationDelay = (index * 0.1) + 's';
+      card.style.animation = 'fadeInUp 0.8s ease-out forwards';
+    });
+  }, 500);
+</script>
+
+</body>
+</html>
